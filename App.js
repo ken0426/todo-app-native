@@ -1,48 +1,56 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { YellowBox } from 'react-native-web';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, TextInput, Button } from 'react-native';
 
 export default function App() {
+  const [text, setText] = useState('')
+  const [todos, setTodos] = useState([])
 
-  const names = [
-    {name: 'Aさん', key: 1},
-    {name: 'Bさん', key: 2},
-    {name: 'Cさん', key: 3},
-    {name: 'Dさん', key: 4},
-    {name: 'Eさん', key: 5},
-    {name: 'Fさん', key: 6},
-    {name: 'Gさん', key: 7},
-    {name: 'Hさん', key: 8},
-    {name: 'Iさん', key: 9},
-    {name: 'Aさん', key: 10},
-    {name: 'Bさん', key: 11},
-    {name: 'Cさん', key: 12},
-    {name: 'Dさん', key: 13},
-    {name: 'Eさん', key: 14},
-    {name: 'Fさん', key: 15},
-    {name: 'Gさん', key: 16},
-    {name: 'Hさん', key: 17},
-    {name: 'Iさん', key: 18},
-  ]
+  const onPressItemDelete = (key) => {
+    const newTodos = todos.filter((item) => item.key !== key)
+    setTodos(newTodos)
+  }
 
+  const onChangeText = (value) => {
+    setText(value)
+  }
+
+  const onPressButton = () => {
+    const newTodos = [...todos, {
+      name: text, key: Math.random().toString(),
+    }]
+    setText('')
+    setTodos(newTodos)
+  }
+
+  const renderItem = ({item}) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.itemName}>{item.name}</Text>
+        <TouchableOpacity
+          style={styles.deleteView}
+          onPress={()=> onPressItemDelete(item.key)}
+        >
+          <Text style={styles.deleteText}>完了</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
   return (
     <View style={styles.container}>
-      <FlatList
-        data={names}
-        renderItem={({item})=> (
-          <TouchableOpacity onPress={() => Alert.alert('名前', item.name)} key={item.key} style={styles.item}>
-            <Text style={styles.name}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
+      <Text style={styles.title}>Todoアプリ</Text>
+      <TextInput
+        style={styles.text}
+        value={text}
+        onChangeText={onChangeText}
       />
-      {/* <ScrollView>
-      {names.map((item) => (
-        <View key={item.key} style={styles.item}>
-          <Text style={styles.name}>{item.name}</Text>
-        </View>
-      ))}
-      </ScrollView> */}
+      <View style={styles.button}>
+        <Button title='追加する' color='blue' onPress={onPressButton} />
+      </View>
+      <FlatList
+        data={todos}
+        renderItem={renderItem}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -53,15 +61,43 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  title: {
+    fontSize:40,
+    fontWeight: 'bold',
+    marginTop:80,
+    marginBottom: 20,
+  },
+  text: {
+    height:40,
+    width:300,
+    padding: 10,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+  },
+  button: {
+    marginBottom: 20,
   },
   item:{
     width:300,
+    backgroundColor:'black',
     marginBottom:30,
-    backgroundColor:'yellow',
+    alignItems:'center',
+    padding:10,
   },
-  name:{
-    fontSize:30,
+  itemName: {
+    fontSize:20,
+    fontWeight:'bold',
+    marginBottom: 8,
+    color: 'white',
+  },
+  deleteView: {
+    width:50,
+    backgroundColor: 'gray',
+  },
+  deleteText: {
+    color:'white',
     textAlign:'center',
-  }
+  },
 });
